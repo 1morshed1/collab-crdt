@@ -137,3 +137,25 @@ wrote down precisely how to complete the roster.
 **What we gave up:** The online-user count can undercount when editors are split across
 pods. Editing correctness and live remote cursors are unaffected. The extension is
 additive and documented in docs/05.
+
+---
+
+## D8 — Optional dependencies (graceful degradation) + vendored builds
+
+**Decision:** Make Postgres and Redis both *optional* at runtime (the server runs
+in-memory / single-instance without them), and *vendor* Go dependencies (`go mod vendor`,
+`vendor/` committed) so the container builds with no network.
+
+**Why (degradation):** The lowest barrier to learning is "have Go, run it." Requiring a
+database and a message broker just to see two tabs sync would scare people off. The `Store`
+and `Bus` interfaces already allowed nil, so `main.go` simply skips wiring what isn't
+configured and logs which features are on. Each layer can then be enabled independently to
+study it.
+
+**Why (vendoring):** The build environment here uses a TLS-intercepting proxy that breaks
+`go mod download` inside `docker build`. More generally, hermetic offline builds are just
+good practice for something people clone into varied networks. Vendoring makes the image
+build reproducible and proxy-independent.
+
+**What we gave up:** `vendor/` adds ~12 MB to the repo and must be refreshed
+(`go mod tidy && go mod vendor`) when dependencies change. Worth it for build reliability.
