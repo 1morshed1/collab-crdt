@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>collab-crdt editor</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <strong>collab-crdt</strong>
+        <span class="doc">document: <code id="doc-id">…</code></span>
+      </div>
+      <div class="right">
+        <div id="roster" class="roster" title="People here"></div>
+        <span id="status" class="status" data-state="connecting">connecting</span>
+      </div>
+    </header>
+
+    <main class="stage">
+      <!-- The editor and the remote-cursor overlay share the same box. The overlay is
+           non-interactive; it just paints collaborators' carets on top of the textarea. -->
+      <div class="editor-wrap">
+        <textarea
+          id="editor"
+          spellcheck="false"
+          autocomplete="off"
+          autocapitalize="off"
+          placeholder="Start typing. Open this same URL in another tab to collaborate."
+        ></textarea>
+        <div id="overlay" class="overlay" aria-hidden="true"></div>
+        <div id="mirror" class="mirror" aria-hidden="true"></div>
+      </div>
+      <p class="hint">
+        Tip: everything is a CRDT. Open two tabs, type in both at once, or go offline for a
+        moment and keep typing — it all converges. See the <code>docs/</code> folder to
+        learn how.
+      </p>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

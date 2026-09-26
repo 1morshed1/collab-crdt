@@ -1,0 +1,185 @@
+/* styles.css — a small, self-contained stylesheet. No framework, no build. */
+
+:root {
+  --bg: #0f1221;
+  --panel: #191d31;
+  --panel-2: #222741;
+  --text: #e7e9f0;
+  --muted: #9aa0b5;
+  --accent: #6ea8fe;
+  --ok: #3cb44b;
+  --warn: #f58231;
+  --err: #e6194b;
+  --border: #2c3350;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.brand .doc {
+  color: var(--muted);
+  font-size: 13px;
+}
+code {
+  background: var(--panel-2);
+  padding: 1px 6px;
+  border-radius: 5px;
+  color: var(--accent);
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.roster {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.chip {
+  --chip: #888;
+  font-size: 12px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--chip);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+  white-space: nowrap;
+}
+
+.status {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  text-transform: lowercase;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.status[data-state="connected"] {
+  color: #062;
+  background: var(--ok);
+  border-color: transparent;
+  color: #04240c;
+}
+.status[data-state="connecting"] {
+  color: #3a2400;
+  background: var(--warn);
+  border-color: transparent;
+}
+.status[data-state="disconnected"] {
+  color: #2a0009;
+  background: var(--err);
+  border-color: transparent;
+}
+
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 10px;
+  min-height: 0;
+}
+
+.editor-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  overflow: hidden;
+}
+
+/* The textarea and overlay MUST share identical geometry so caret math lines up. */
+#editor,
+.overlay,
+.mirror {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 16px;
+  border: 0;
+  font: 15px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+#editor {
+  resize: none;
+  background: transparent;
+  color: var(--text);
+  outline: none;
+  overflow: auto;
+}
+#editor:disabled {
+  opacity: 0.6;
+}
+
+.overlay {
+  pointer-events: none;
+  overflow: hidden;
+}
+.mirror {
+  visibility: hidden;
+  pointer-events: none;
+  color: transparent;
+  overflow: hidden;
+}
+
+.remote-caret {
+  position: absolute;
+  width: 2px;
+  border-radius: 1px;
+}
+.remote-label {
+  position: absolute;
+  top: -1.35em;
+  left: -1px;
+  font: 11px/1.4 sans-serif;
+  color: #fff;
+  padding: 0 5px;
+  border-radius: 4px 4px 4px 0;
+  white-space: nowrap;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0;
+}
