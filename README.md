@@ -45,29 +45,68 @@ the docs in order — they are numbered.
 
 ## Quick start
 
+Absolute fastest (needs only Go — in-memory, single instance):
+
 ```bash
-# 1. Start Postgres + Redis
-docker compose up -d
+make run-mem          # or: go run ./cmd/server
+# open http://localhost:8080/?doc=notes in two browser tabs
+```
 
-# 2. Run the server (applies DB migrations on boot)
-make run          # or: go run ./cmd/server
+Full stack (Postgres persistence + Redis fan-out) in Docker:
 
-# 3. Open the editor in two browser tabs
-open http://localhost:8080
+```bash
+make up               # builds the app, starts db + redis, serves :8080
+```
+
+Or run the infra in Docker and the app on your host for fast iteration:
+
+```bash
+make infra-up && make run
 ```
 
 Type in one tab, watch it appear in the other. Open a third. Disconnect your
 network for a second and keep typing — when you reconnect, everything converges.
+Run **two server pods** sharing Redis with `make up-multi` (`:8080` and `:8081`)
+to watch collaboration work across separate processes.
 
-See [`docs/00-overview.md`](docs/00-overview.md) for the full learning roadmap.
+Requires Go 1.25+ (dependencies are vendored, so the Docker image builds offline).
+Run `make help` for every command.
+
+## The learning docs (read in order)
+
+| # | Doc | What you'll learn |
+|---|-----|-------------------|
+| 00 | [overview](docs/00-overview.md) | The problem, CRDT vs OT, vocabulary, roadmap |
+| 01 | [crdt-rga](docs/01-crdt-rga.md) | RGA from first principles: ids, Lamport clocks, tombstones, convergence |
+| 02 | [operations-and-cursors](docs/02-operations-and-cursors.md) | Op serialization; why cursors are ids, not offsets |
+| 03 | [websocket-server](docs/03-websocket-server.md) | Rooms, the hub, broadcast, concurrency |
+| 04 | [persistence](docs/04-persistence.md) | Op log, snapshots, fast reload, version history |
+| 05 | [presence-and-redis](docs/05-presence-and-redis.md) | Ephemeral presence; scaling across pods |
+| 06 | [frontend](docs/06-frontend.md) | textarea→CRDT diffing, caret preservation, remote cursors |
+| 07 | [running-and-ops](docs/07-running-and-ops.md) | Config, Docker, operating it |
+| 08 | [testing-and-load](docs/08-testing-and-load.md) | Convergence testing + real performance numbers |
+| — | [decisions](docs/decisions.md) | Running log of every non-obvious decision (D1–D8) |
 
 ## Running the tests
 
 ```bash
-make test                 # everything
-go test ./internal/crdt   # just the CRDT, including the randomized convergence tests
+make test                 # unit tests, no infra needed (always green)
+make test-crdt            # the CRDT verbosely, incl. randomized convergence
+make loadtest             # scale/latency harness with printed numbers
+
+make infra-up             # start Postgres + Redis, then:
+make test-integration     # everything incl. DB + Redis integration tests, with -race
 ```
 
 The randomized convergence test is the single most important test in the repo: it
 applies thousands of operations in random orders across simulated replicas and
 asserts they all reach byte-identical state. If the CRDT has a bug, this catches it.
+
+## Project status
+
+All phases from `plan.md` are implemented and verified end-to-end: the RGA CRDT,
+the WebSocket collaboration server, PostgreSQL persistence with snapshots, Redis
+cross-pod fan-out, and the browser editor with live cursors and presence.
+Deliberately-scoped extensions (cross-pod presence roster, tombstone garbage
+collection, multi-line remote selections, a version-history slider UI) are
+documented as such in the docs and decision log rather than left as silent gaps.
