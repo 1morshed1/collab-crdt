@@ -59,16 +59,38 @@ func (d *Document) Snapshot() ([]byte, error) {
 	return json.Marshal(snap)
 }
 
-// LoadSnapshot replaces this document's state with the deserialized snapshot. Any
-// existing state is discarded. It reuses the same out-of-order buffering logic as
-// live operations, so a snapshot whose nodes happen to be listed with a child
-// before its parent still rebuilds correctly.
+// LoadSnapshot rebuilds a document from a snapshot, keeping the site id stored IN the
+// snapshot. This is what the server uses to restore its own replica on restart.
+//
+// It reuses the same out-of-order buffering logic as live operations, so a snapshot
+// whose nodes happen to be listed with a child before its parent still rebuilds
+// correctly.
 func LoadSnapshot(data []byte) (*Document, error) {
 	var snap snapshot
 	if err := json.Unmarshal(data, &snap); err != nil {
 		return nil, err
 	}
-	d := New(snap.SiteID)
+	return loadSnapshot(snap, snap.SiteID)
+}
+
+// LoadSnapshotAs rebuilds a document from a snapshot but assigns it a DIFFERENT site
+// id. This is essential on the client: every browser tab must load the shared document
+// state yet keep its OWN unique site id, or the ids it generates would collide with
+// another tab that loaded the same snapshot — and colliding ids get silently dropped
+// by the idempotency check, so concurrent edits would vanish. (This exact bug is why
+// this function exists; see decision D5.)
+func LoadSnapshotAs(data []byte, siteID string) (*Document, error) {
+	var snap snapshot
+	if err := json.Unmarshal(data, &snap); err != nil {
+		return nil, err
+	}
+	return loadSnapshot(snap, siteID)
+}
+
+// loadSnapshot is the shared implementation. siteID is applied to the new document
+// regardless of what the snapshot stored.
+func loadSnapshot(snap snapshot, siteID string) (*Document, error) {
+	d := New(siteID)
 
 	// Rebuild by replaying inserts (then applying deletes). applyInsert already
 	// handles the case where a parent has not been created yet by parking the child
@@ -83,7 +105,11 @@ func LoadSnapshot(data []byte) (*Document, error) {
 	}
 
 	// Restore the clock last: replaying inserts above advanced it via observe(), but
-	// we want exactly the saved value so id generation continues where it left off.
-	d.lamport = snap.Lamport
+	// we want at least the saved value so id generation continues past everything in
+	// the snapshot. (max guards against a caller-supplied site whose replay somehow
+	// pushed the clock higher.)
+	if snap.Lamport > d.lamport {
+		d.lamport = snap.Lamport
+	}
 	return d, nil
 }

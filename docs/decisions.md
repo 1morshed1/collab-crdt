@@ -75,3 +75,43 @@ installed.
 
 **What we gave up:** Ergonomics for a _large_ UI. For this focused editor it's a win;
 for a real product you'd want a framework.
+
+---
+
+## D5 — A client loads shared state but keeps its OWN site id (`LoadSnapshotAs`)
+
+**Decision:** When a client joins, the server ships it a snapshot of the document. The
+client must rebuild its replica using the **client id the server assigned it** as the
+CRDT site — not the site id stored inside the snapshot. `crdt.LoadSnapshotAs(data,
+siteID)` exists for exactly this.
+
+**Why (this was a real bug caught by the end-to-end test):** The first version had every
+client call `LoadSnapshot`, which adopts the snapshot's stored site id (the server's).
+So two tabs both ended up with site `server:<doc>` and the same starting Lamport. The
+next character each of them typed got the **identical** CharID `{1, server:<doc>}`. The
+idempotency check in `applyInsert` ("already have this id? ignore") then silently
+dropped one of the two concurrent edits — the tabs stopped converging. The fix is to
+guarantee each replica has a unique site id, which is the whole reason CharIDs carry a
+site in the first place. The server-assigned client id is unique, so the client uses it.
+
+**What we gave up:** Nothing. This is just correct id hygiene. The lesson worth keeping:
+CRDT idempotency turns an id-uniqueness violation into *silent* data loss rather than a
+crash — so uniqueness of the site id is a load-bearing invariant, and it's now tested
+by `TestWebSocketConvergenceTwoWay`.
+
+---
+
+## D6 — Drop slow clients rather than block the room
+
+**Decision:** Each client has a bounded outbound buffer (256 messages). If a broadcast
+can't enqueue because the buffer is full, we disconnect that client instead of blocking.
+
+**Why:** A room broadcasts every op to every client while holding the room lock. If one
+client's socket is slow or wedged, blocking on it would stall broadcasts to *everyone*
+and back up the whole room. Availability for the many beats a guaranteed delivery to the
+one straggler — and the straggler simply reconnects and reloads a fresh snapshot, so it
+loses nothing permanent.
+
+**What we gave up:** A momentarily slow client can be disconnected under heavy load. The
+recovery (reconnect + snapshot) makes this safe, and it's the standard hub/broadcast
+pattern for exactly this reason.

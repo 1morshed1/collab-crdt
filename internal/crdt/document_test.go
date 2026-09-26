@@ -98,14 +98,14 @@ func TestIdempotentApply(t *testing.T) {
 func TestOutOfOrderDelivery(t *testing.T) {
 	src := New("A")
 	ops, _ := typeString(src, Root, "abc") // ops for a, b, c (each parented on prev)
-	delOp := src.LocalDelete(ops[1].ID)     // delete 'b'
+	delOp := src.LocalDelete(ops[1].ID)    // delete 'b'
 
 	dst := New("B")
 	// Deliver in a deliberately broken order: delete first, then c, then b, then a.
-	dst.Apply(delOp)   // target 'b' unknown -> parked
-	dst.Apply(ops[2])  // 'c', parent 'b' unknown -> parked
-	dst.Apply(ops[1])  // 'b', parent 'a' unknown -> parked (also honors parked delete)
-	dst.Apply(ops[0])  // 'a', parent Root -> unblocks b, then c
+	dst.Apply(delOp)  // target 'b' unknown -> parked
+	dst.Apply(ops[2]) // 'c', parent 'b' unknown -> parked
+	dst.Apply(ops[1]) // 'b', parent 'a' unknown -> parked (also honors parked delete)
+	dst.Apply(ops[0]) // 'a', parent Root -> unblocks b, then c
 
 	if dst.Text() != src.Text() {
 		t.Fatalf("diverged: src=%q dst=%q", src.Text(), dst.Text())
