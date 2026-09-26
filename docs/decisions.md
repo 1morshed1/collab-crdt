@@ -115,3 +115,25 @@ loses nothing permanent.
 **What we gave up:** A momentarily slow client can be disconnected under heavy load. The
 recovery (reconnect + snapshot) makes this safe, and it's the standard hub/broadcast
 pattern for exactly this reason.
+
+---
+
+## D7 — Redis Pub/Sub for cross-pod ops/cursors; roster stays per-pod (for now)
+
+**Decision:** Implement the `server.Bus` seam with Redis Pub/Sub to fan out operations
+and cursor updates across server instances, with per-instance echo suppression. Leave the
+presence *roster* (the "who's online" list) per-pod for now, documenting the Redis-set +
+TTL-heartbeat design as the next step.
+
+**Why:** Cross-pod delivery of edits is the substantive distributed-systems requirement
+from the plan's scaling section, and it's what actually breaks collaboration when you add
+a second pod. Pub/Sub is a perfect fit because the CRDT already tolerates the unordered,
+at-most-once delivery Pub/Sub provides — so the transport can stay dumb. The full
+cross-pod roster (with crash-safe expiry) is a meaningful additional chunk of state
+management; rather than ship a half-correct version that leaks stale users when a pod
+dies, we implemented the load-bearing part (editing + live cursors work cluster-wide) and
+wrote down precisely how to complete the roster.
+
+**What we gave up:** The online-user count can undercount when editors are split across
+pods. Editing correctness and live remote cursors are unaffected. The extension is
+additive and documented in docs/05.
