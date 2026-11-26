@@ -2,7 +2,7 @@
 /bin/
 *.test
 *.out
-coverage.*
+/coverage.*
 
 # Env / local
 .env
