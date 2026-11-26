@@ -48,7 +48,7 @@ CRDT is wrong, but because the op never reached Bob's replica.
 
 ## Redis Pub/Sub bridges the pods (the Bus)
 
-The fix (straight from `plan.md`'s scaling section): every pod **publishes** each
+The fix (straight from the original spec's scaling section): every pod **publishes** each
 document's messages to a Redis channel, and every pod **subscribes** to the channels for
 documents it has clients for.
 

@@ -55,7 +55,7 @@ selection across edits, we need something stable.
 
 Same fix as before: **represent a cursor as a CharID** — "the cursor is immediately
 after the character with id X." That anchor survives arbitrary concurrent editing.
-`plan.md` calls these `AnchorID` (and `HeadID` for the far end of a selection).
+The original spec calls these `AnchorID` (and `HeadID` for the far end of a selection).
 
 ## 3. The conversion helpers
 

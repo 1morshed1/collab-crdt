@@ -95,7 +95,7 @@ files live under the `store` package because `go:embed` can't reach parent direc
 
 Because every op is retained with a `created_at` and a `seq`, you can reconstruct the
 document as of any past moment: load the latest snapshot **before** that moment, then
-replay ops up to it — exactly the `GetDocumentAtTime` sketch in `plan.md`. That powers a
+replay ops up to it — exactly the `GetDocumentAtTime` sketch in the original spec. That powers a
 "drag the slider to see the doc last Tuesday" feature like Google Docs history. The
 building blocks (`LoadSnapshot`, `OpsSince`) are already here; wiring a UI slider is left
 as a documented extension.
@@ -104,8 +104,8 @@ as a documented extension.
 
 Snapshots bound how many *ops* you replay, but the CRDT state itself still carries every
 tombstone (doc 01 §5). True reclamation — **garbage-collecting tombstones** once every
-replica has seen the delete — is a distinct mechanism touched on in docs/05. For a
-learning project at realistic sizes it's not a problem; we call it out honestly rather
+replica has seen the delete — is a distinct mechanism touched on in docs/05. At this
+project's realistic document sizes it's not a problem; we call it out honestly rather
 than pretend it away.
 
 ## Running the tests

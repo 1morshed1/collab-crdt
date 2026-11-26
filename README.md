@@ -1,15 +1,17 @@
 # collab-crdt — a real-time collaborative document editor built on CRDTs
 
+[![CI](https://github.com/1morshed1/collab-crdt/actions/workflows/ci.yml/badge.svg)](https://github.com/1morshed1/collab-crdt/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Multiple people edit the same document at the same time. Every keystroke shows up
 instantly for everyone. There is **no central lock** and **no operational-transform
 server deciding the "true" order of edits** — instead, edits are structured so that
 they can be applied _in any order_ on every machine and still converge to exactly the
 same document. That is the whole point of a **CRDT (Conflict-free Replicated Data Type)**.
 
-This repository is built as a **learning project**. The code is real and it works,
-but just as important is the `docs/` folder, which walks through _why_ every piece is
-shaped the way it is. If you are here to learn CRDTs and the systems around them, read
-the docs in order — they are numbered.
+The `docs/` folder walks through _why_ every piece is shaped the way it is. To
+understand CRDTs and the systems around them, read the docs in order — they are
+numbered.
 
 ---
 
@@ -104,9 +106,13 @@ asserts they all reach byte-identical state. If the CRDT has a bug, this catches
 
 ## Project status
 
-All phases from `plan.md` are implemented and verified end-to-end: the RGA CRDT,
+All phases from the original spec are implemented and verified end-to-end: the RGA CRDT,
 the WebSocket collaboration server, PostgreSQL persistence with snapshots, Redis
 cross-pod fan-out, and the browser editor with live cursors and presence.
 Deliberately-scoped extensions (cross-pod presence roster, tombstone garbage
 collection, multi-line remote selections, a version-history slider UI) are
 documented as such in the docs and decision log rather than left as silent gaps.
+
+## License
+
+[MIT](LICENSE)

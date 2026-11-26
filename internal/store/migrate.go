@@ -20,8 +20,7 @@ var migrationsFS embed.FS
 
 // migrate applies every embedded migration that hasn't run yet, in filename order, and
 // records applied ones in a schema_migrations table so it is safe to run on every boot.
-// This is a deliberately tiny migration runner — enough to be correct and legible for a
-// learning project, without pulling in a full migration framework.
+// This is a deliberately tiny migration runner — enough to be correct and legible, without pulling in a full migration framework.
 func migrate(ctx context.Context, pool *pgxpool.Pool) error {
 	if _, err := pool.Exec(ctx, `
 		CREATE TABLE IF NOT EXISTS schema_migrations (

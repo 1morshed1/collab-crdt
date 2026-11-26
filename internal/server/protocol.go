@@ -8,7 +8,7 @@ import (
 
 // This file defines the WebSocket wire protocol: the messages a client and server
 // send each other. Everything is a small JSON envelope with a "type" and a "data"
-// blob, mirroring plan.md's WSMessage. Keeping the envelope uniform means the read
+// blob, mirroring the original spec's WSMessage. Keeping the envelope uniform means the read
 // loop can dispatch on a single field, and new message types can be added without
 // touching the framing.
 

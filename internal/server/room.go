@@ -12,7 +12,7 @@ import (
 // snapshotEvery controls how often the server persists a full CRDT snapshot: once
 // this many operations have been applied since the last snapshot. Snapshots keep
 // document load fast by bounding how many ops must be replayed (docs/04). 1000 is the
-// value plan.md suggests.
+// value the original spec suggests.
 const snapshotEvery = 1000
 
 // Room is the server's coordinator for a single document. Every client editing that

@@ -48,7 +48,7 @@ go test -race ./internal/crdt          # also validates the locking
 
 ## Load results (from `go test ./internal/crdt -run TestLoad -v`)
 
-### Convergence at scale — plan.md's headline test
+### Convergence at scale — the original spec's headline test
 
 `TestLoadConvergence5x1000`: 5 clients, 1,000 random edits each, all cross-applied in
 random order.
@@ -93,7 +93,7 @@ seen the deletes (docs/05) — deliberately left as a documented extension.
 
 ## Latency and concurrent-editor scale (how to measure)
 
-- **Keystroke latency** (plan's <50ms local / <200ms internet target) is an end-to-end
+- **Keystroke latency** (spec's <50ms local / <200ms internet target) is an end-to-end
   property best measured in the browser: timestamp on keydown, timestamp when the character
   appears in the other tab. Locally it's dominated by the WebSocket round-trip, not the
   CRDT (per-op apply is microseconds, as shown above), so on localhost you're comfortably

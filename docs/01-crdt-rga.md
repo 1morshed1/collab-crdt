@@ -127,7 +127,7 @@ Both are children of `Root`. Sorted descending, `1@B > 1@A` (same Lamport, `"B" 
 replica, because the ordering is a pure function of the ids, which everyone agrees on.
 No messages, no locks, no server arbitration.
 
-> **Heads-up on `plan.md`:** its prose says this example yields "HX", but its own
+> **Heads-up on the original spec:** its prose says this example yields "HX", but its own
 > pseudocode (and the standard RGA rule) yields "XH" (higher id first). We follow the
 > code/standard and document it in decision D2 and test it in
 > `TestConcurrentInsertSameSpot`. The direction is a convention; consistency is what

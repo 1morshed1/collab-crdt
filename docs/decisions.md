@@ -34,7 +34,7 @@ by CharID **descending** (larger ID = earlier in the text).
 **Why:** It's the standard RGA convention and it makes concurrent inserts at the same
 spot deterministic. The exact direction (ascending vs descending) is arbitrary for
 _correctness_ — any total, agreed-upon order converges — but it must be consistent
-everywhere. Note: `plan.md`'s prose says "HX" for a concurrent example while its own
+everywhere. Note: the original spec's prose says "HX" for a concurrent example while its own
 pseudocode produces "XH" (higher-ID-first). We follow the **code's** behavior
 (higher-ID-first) and document the discrepancy so it doesn't confuse anyone. See
 `docs/01-crdt-rga.md`.
@@ -48,7 +48,7 @@ pseudocode produces "XH" (higher-ID-first). We follow the **code's** behavior
 **Decision:** Model the RGA as a tree: each character node hangs off the character it was
 inserted after (its "parent"), children are kept sorted by CharID descending, and the
 visible text is a pre-order depth-first traversal. This is instead of the fragile
-linear-array-with-skip-scan shown in `plan.md`.
+linear-array-with-skip-scan shown in the original spec.
 
 **Why:** The tree makes the integration rule trivially correct and easy to reason about:
 "insert after X" = "add as a child of X, in sorted order." The array-scan version in the
@@ -65,7 +65,7 @@ complexity tradeoffs in the CRDT doc but keep the clear version.
 ## D4 — Frontend is zero-build vanilla JS, not React
 
 **Decision:** The client is plain HTML/CSS/JS modules served straight from the Go binary,
-no bundler, no npm build step. (`plan.md` suggested React.)
+no bundler, no npm build step. (The original spec suggested React.)
 
 **Why:** This is a learning repo. A build toolchain (Vite/webpack/JSX transpilation) adds
 a lot of moving parts that have nothing to do with CRDTs. Vanilla JS keeps the client
@@ -126,7 +126,7 @@ presence *roster* (the "who's online" list) per-pod for now, documenting the Red
 TTL-heartbeat design as the next step.
 
 **Why:** Cross-pod delivery of edits is the substantive distributed-systems requirement
-from the plan's scaling section, and it's what actually breaks collaboration when you add
+from the spec's scaling section, and it's what actually breaks collaboration when you add
 a second pod. Pub/Sub is a perfect fit because the CRDT already tolerates the unordered,
 at-most-once delivery Pub/Sub provides — so the transport can stay dumb. The full
 cross-pod roster (with crash-safe expiry) is a meaningful additional chunk of state

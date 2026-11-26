@@ -13,9 +13,9 @@ import (
 //
 //	go test ./internal/crdt -run TestLoad -v
 //
-// They double as executable versions of plan.md's "Load Testing" section.
+// They double as executable versions of the original spec's "Load Testing" section.
 
-// TestLoadConvergence5x1000 is exactly the plan's headline correctness-at-scale test:
+// TestLoadConvergence5x1000 is exactly the spec's headline correctness-at-scale test:
 // 5 concurrent clients each insert 1,000 characters at random positions, then every op is
 // delivered to every replica in a random order. All 5 must end byte-identical.
 func TestLoadConvergence5x1000(t *testing.T) {
@@ -59,7 +59,7 @@ func TestLoadConvergence5x1000(t *testing.T) {
 }
 
 // TestLoadDocumentScaling measures how the cost of a single operation grows with document
-// size — the "Document size" bullet in plan.md. It builds documents of increasing size and
+// size — the "Document size" bullet in the original spec. It builds documents of increasing size and
 // times a batch of inserts at the end, reporting per-op cost. This makes the O(n) nature of
 // our clarity-first implementation visible (see docs/01 §8 and docs/08).
 func TestLoadDocumentScaling(t *testing.T) {

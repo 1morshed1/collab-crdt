@@ -15,7 +15,7 @@ make run-mem          # or: go run ./cmd/server
 
 With no database and no Redis, the server keeps documents **in memory only** and runs as a
 **single instance**. That's enough to type in two tabs and watch convergence. It's the
-zero-friction path for learning, and it exists because the entry point degrades gracefully
+zero-friction path for trying it out, and it exists because the entry point degrades gracefully
 (see below).
 
 ## The full stack
